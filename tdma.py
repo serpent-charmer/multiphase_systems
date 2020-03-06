@@ -1,18 +1,24 @@
-def TDMA(a,b,c,f):
-    a, b, c, f = map(lambda k_list: map(float, k_list), (a, b, c, f))
+def TDMA(a, b, c, d):
 
-    alpha = [0]
-    beta = [0]
-    n = len(f)
-    x = [0]*n
+    nf = len(d)
+    ac, bc, cc, dc = a[:], b[:], c[:], d[:]
+    for it in range(1, nf):
+        mc = ac[it-1]/bc[it-1]
+        bc[it] = bc[it] - mc*cc[it-1]
+        dc[it] = dc[it] - mc*dc[it-1]
 
-    for i in range(n-1):
-        alpha.append(-b[i]/(a[i]*alpha[i] + c[i]))
-        beta.append((f[i] - a[i]*beta[i])/(a[i]*alpha[i] + c[i]))
+    xc = bc
+    xc[-1] = dc[-1]/bc[-1]
 
-    x[n-1] = (f[n-1] - a[n-2]*beta[n-1])/(c[n-1] + a[n-2]*alpha[n-1])
+    for il in range(nf-2, -1, -1):
+        xc[il] = (dc[il]-cc[il]*xc[il+1])/bc[il]
 
-    for i in reversed(range(n-1)):
-        x[i] = alpha[i+1]*x[i+1] + beta[i+1]
+    return xc
 
-    return x
+if __name__ == '__main__':
+	a = [3, 1, 3]
+	b = [10, 10, 7, 4]
+	c = [2, 4, 5]
+	d = [3, 4, 5, 6]	
+	
+	print(TDMA(a, b, c, d))
